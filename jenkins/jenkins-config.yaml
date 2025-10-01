@@ -1,0 +1,90 @@
+jenkins:
+  systemMessage: "LIGER Platform CI/CD Pipeline"
+  numExecutors: 2
+  mode: NORMAL
+  scmCheckoutRetryCount: 3
+  
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "admin"
+          password: "admin123"
+          
+  authorizationStrategy:
+    roleBased:
+      roles:
+        global:
+          - name: "admin"
+            description: "Jenkins administrators"
+            permissions:
+              - "Overall/Administer"
+            assignments:
+              - "admin"
+          - name: "developer"
+            description: "Jenkins developers"
+            permissions:
+              - "Overall/Read"
+              - "Job/Build"
+              - "Job/Cancel"
+              - "Job/Read"
+              - "Job/Workspace"
+            assignments:
+              - "developer"
+
+  clouds:
+    - docker:
+        name: "docker"
+        dockerApi:
+          dockerHost:
+            uri: "unix:///var/run/docker.sock"
+        templates:
+          - labelString: "docker-agent"
+            name: "docker-agent"
+            dockerTemplateBase:
+              image: "jenkins/inbound-agent:latest"
+            remoteFs: "/home/jenkins/agent"
+            connector:
+              attach:
+                user: "jenkins"
+            instanceCapStr: "10"
+            retentionStrategy:
+              idleMinutes: 1
+
+unclassified:
+  location:
+    url: "http://localhost:8080/"
+    adminAddress: "admin@liger.club"
+    
+  gitHubPluginConfig:
+    hookUrl: "http://localhost:8080/github-webhook/"
+    
+  timestamperConfig:
+    allPipelines: true
+    
+  buildDiscarders:
+    configuredBuildDiscarders:
+      - "logRotator":
+          artifactDaysToKeepStr: "30"
+          artifactNumToKeepStr: "10"
+          daysToKeepStr: "90"
+          numToKeepStr: "20"
+
+jobs:
+  - script: |
+      multibranchPipelineJob('LIGER-Platform') {
+        branchSources {
+          git {
+            id('liger-repo')
+            remote('https://github.com/rgknow/LIGER.git')
+          }
+        }
+        triggers {
+          periodic(5)
+        }
+        orphanedItemStrategy {
+          discardOldItems {
+            numToKeep(20)
+          }
+        }
+      }

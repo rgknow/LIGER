@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: liger-jenkins
+    restart: unless-stopped
+    user: root
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./jenkins_data:/var/jenkins_home
+      - ./plugins.txt:/usr/share/jenkins/ref/plugins.txt
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+      - JENKINS_ADMIN_ID=admin
+      - JENKINS_ADMIN_PASSWORD=admin123
+    networks:
+      - liger-network
+
+  jenkins-agent:
+    image: jenkins/inbound-agent:latest
+    container_name: liger-jenkins-agent
+    restart: unless-stopped
+    environment:
+      - JENKINS_URL=http://jenkins:8080
+      - JENKINS_SECRET=${JENKINS_AGENT_SECRET}
+      - JENKINS_AGENT_NAME=docker-agent
+      - JENKINS_AGENT_WORKDIR=/home/jenkins/agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - jenkins_agent_workdir:/home/jenkins/agent
+    networks:
+      - liger-network
+    depends_on:
+      - jenkins
+
+  postgres:
+    image: postgres:14
+    container_name: liger-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: liger_db
+      POSTGRES_USER: liger_user
+      POSTGRES_PASSWORD: liger_pass123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - liger-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: liger-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - liger-network
+
+volumes:
+  jenkins_home:
+  jenkins_agent_workdir:
+  postgres_data:
+  redis_data:
+
+networks:
+  liger-network:
+    driver: bridge

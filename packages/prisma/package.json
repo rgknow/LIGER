@@ -1,0 +1,22 @@
+{
+  "name": "@liger/prisma",
+  "version": "1.0.0",
+  "description": "Database schema and migrations for LIGER platform",
+  "main": "index.js",
+  "scripts": {
+    "generate": "prisma generate",
+    "migrate": "prisma migrate dev",
+    "migrate:prod": "prisma migrate deploy",
+    "studio": "prisma studio",
+    "seed": "tsx seed.ts",
+    "reset": "prisma migrate reset --force"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.0.0"
+  },
+  "devDependencies": {
+    "prisma": "^5.0.0",
+    "tsx": "^4.0.0",
+    "@types/node": "^20.0.0"
+  }
+}

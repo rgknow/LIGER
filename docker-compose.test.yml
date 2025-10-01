@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  postgres-test:
+    image: postgres:14
+    container_name: liger-postgres-test
+    environment:
+      POSTGRES_DB: liger_test_db
+      POSTGRES_USER: liger_test_user
+      POSTGRES_PASSWORD: liger_test_pass
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    networks:
+      - liger-test-network
+
+  redis-test:
+    image: redis:7-alpine
+    container_name: liger-redis-test
+    ports:
+      - "6380:6379"
+    networks:
+      - liger-test-network
+
+  proposal-svc-test:
+    build:
+      context: .
+      dockerfile: apps/proposal-svc/Dockerfile
+    container_name: liger-proposal-svc-test
+    environment:
+      - NODE_ENV=test
+      - DATABASE_URL=postgresql://liger_test_user:liger_test_pass@postgres-test:5432/liger_test_db
+      - REDIS_URL=redis://redis-test:6379
+      - JWT_SECRET=test_secret_key_for_testing_only
+    ports:
+      - "3003:3003"
+    depends_on:
+      - postgres-test
+      - redis-test
+    networks:
+      - liger-test-network
+    command: ["npm", "run", "start:dev"]
+
+  approval-svc-test:
+    build:
+      context: .
+      dockerfile: apps/approval-svc/Dockerfile
+    container_name: liger-approval-svc-test
+    environment:
+      - NODE_ENV=test
+      - DATABASE_URL=postgresql://liger_test_user:liger_test_pass@postgres-test:5432/liger_test_db
+      - REDIS_URL=redis://redis-test:6379
+      - JWT_SECRET=test_secret_key_for_testing_only
+    ports:
+      - "3013:3013"
+    depends_on:
+      - postgres-test
+      - redis-test
+    networks:
+      - liger-test-network
+    command: ["npm", "run", "start:dev"]
+
+  api-gateway-test:
+    build:
+      context: .
+      dockerfile: apps/api-gateway/Dockerfile
+    container_name: liger-api-gateway-test
+    environment:
+      - NODE_ENV=test
+      - PROPOSAL_SERVICE_URL=http://proposal-svc-test:3003
+      - APPROVAL_SERVICE_URL=http://approval-svc-test:3013
+    ports:
+      - "3001:3001"
+    depends_on:
+      - proposal-svc-test
+      - approval-svc-test
+    networks:
+      - liger-test-network
+    command: ["npm", "run", "start:dev"]
+
+volumes:
+  postgres_test_data:
+
+networks:
+  liger-test-network:
+    driver: bridge

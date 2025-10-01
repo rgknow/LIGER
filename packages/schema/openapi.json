@@ -1,0 +1,1081 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "LIGER CLUB API",
+    "version": "1.0.0",
+    "description": "API for LIGER CLUB MVP"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Development server"
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "summary": "Register a new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Login user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/consent/scopes": {
+      "get": {
+        "summary": "Get consent scopes",
+        "responses": {
+          "200": {
+            "description": "List of scopes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ConsentScope"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/consent/grant": {
+      "post": {
+        "summary": "Grant consent",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsentGrant"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Consent granted"
+          }
+        }
+      }
+    },
+    "/forms/{id}": {
+      "get": {
+        "summary": "Get assessment form",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Form data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssessmentForm"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/responses": {
+      "post": {
+        "summary": "Submit responses",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Responses submitted"
+          }
+        }
+      }
+    },
+    "/scores/{student_id}": {
+      "get": {
+        "summary": "Get scores",
+        "parameters": [
+          {
+            "name": "student_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Scores",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainScores"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scoring/recompute/{student_id}": {
+      "post": {
+        "summary": "Recompute scores",
+        "parameters": [
+          {
+            "name": "student_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recomputed"
+          }
+        }
+      }
+    },
+    "/scoring/scs/{student_id}": {
+      "get": {
+        "summary": "Get SCS",
+        "parameters": [
+          {
+            "name": "student_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "SCS data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SCS"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/habits": {
+      "post": {
+        "summary": "Create habit task",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HabitTask"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Task created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HabitTask"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/habits/{id}/validate": {
+      "post": {
+        "summary": "Validate habit",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HabitValidation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Validated"
+          }
+        }
+      }
+    },
+    "/habits/{student_id}/stats": {
+      "get": {
+        "summary": "Get habit stats",
+        "parameters": [
+          {
+            "name": "student_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Stats",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HabitStats"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wallet/credit": {
+      "post": {
+        "summary": "Credit wallet",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WalletCredit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Credited"
+          }
+        }
+      }
+    },
+    "/wallet/{student_id}/ledger": {
+      "get": {
+        "summary": "Get wallet ledger",
+        "parameters": [
+          {
+            "name": "student_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ledger",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WalletTxn"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wallet/release": {
+      "post": {
+        "summary": "Release wallet hold",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WalletAction"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Hold released"
+          }
+        }
+      }
+    },
+    "/report/{student_id}": {
+      "get": {
+        "summary": "Get report",
+        "parameters": [
+          {
+            "name": "student_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Report JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Report"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/portfolio/{studentId}": {
+      "get": {
+        "summary": "Get student portfolio",
+        "parameters": [
+          {
+            "name": "studentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Portfolio data"
+          }
+        }
+      }
+    },
+    "/proposal": {
+      "post": {
+        "summary": "Create a new proposal",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProposalRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Proposal created"
+          }
+        }
+      }
+    },
+    "/proposal/{id}": {
+      "get": {
+        "summary": "Get proposal details",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Proposal brief"
+          }
+        }
+      }
+    },
+    "/proposal/{id}/approve": {
+      "post": {
+        "summary": "Approve a proposal",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Proposal approved"
+          }
+        }
+      }
+    },
+    "/proposal/{id}/reject": {
+      "post": {
+        "summary": "Reject a proposal",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Proposal rejected"
+          }
+        }
+      }
+    },
+    "/report/{student_id}/export": {
+      "post": {
+        "summary": "Export report",
+        "parameters": [
+          {
+            "name": "student_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "PDF exported",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/anchor": {
+      "post": {
+        "summary": "Anchor checksums",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnchorRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Anchored",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnchorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/anchor/{txid}": {
+      "get": {
+        "summary": "Verify anchor",
+        "parameters": [
+          {
+            "name": "txid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Verification",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scholarships": {
+      "get": {
+        "summary": "Get all scholarship listings",
+        "responses": {
+          "200": {
+            "description": "A list of scholarships"
+          }
+        }
+      },
+      "post": {
+        "summary": "Sponsor creates a new scholarship listing",
+        "responses": {
+          "201": {
+            "description": "Scholarship created"
+          }
+        }
+      }
+    },
+    "/scholarships/{id}/apply": {
+      "post": {
+        "summary": "Student applies for a scholarship",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Application submitted"
+          }
+        }
+      }
+    },
+    "/scholarships/{id}/award": {
+      "post": {
+        "summary": "Sponsor awards a scholarship",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Scholarship awarded"
+          }
+        }
+      }
+    },
+    "/loans": {
+      "post": {
+        "summary": "Student/parent creates a new loan request brief",
+        "responses": {
+          "201": {
+            "description": "Loan request created"
+          }
+        }
+      }
+    },
+    "/loans/{id}": {
+      "get": {
+        "summary": "Get public listing for a loan",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Loan details"
+          }
+        }
+      }
+    },
+    "/loans/{id}/fund": {
+      "post": {
+        "summary": "Investor commits CTK to a loan",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Funds committed"
+          }
+        }
+      }
+    },
+    "/loans/{id}/disburse": {
+      "post": {
+        "summary": "Disburse funds for a loan",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Funds disbursed"
+          }
+        }
+      }
+    },
+    "/loans/{id}/repay": {
+      "post": {
+        "summary": "Make a repayment on a loan",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Repayment made"
+          }
+        }
+      }
+    },
+    "/dossier/generate": {
+      "post": {
+        "summary": "Generate a student dossier",
+        "responses": {
+          "200": {
+            "description": "Dossier generated"
+          }
+        }
+      }
+    },
+    "/dossier/{id}": {
+      "get": {
+        "summary": "Get a verifiable link for a dossier",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dossier link"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "role": {"type": "string", "enum": ["STUDENT", "PARENT", "MENTOR", "ADMIN"]},
+          "org_id": {"type": "integer"},
+          "profile_json": {"type": "object"},
+          "consent_state": {"type": "string"},
+          "pii_encrypted_ref": {"type": "string"}
+        }
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "properties": {
+          "email": {"type": "string"},
+          "password": {"type": "string"},
+          "role": {"type": "string", "enum": ["STUDENT", "PARENT", "MENTOR", "ADMIN"]}
+        },
+        "required": ["email", "password", "role"]
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "email": {"type": "string"},
+          "password": {"type": "string"}
+        },
+        "required": ["email", "password"]
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "token": {"type": "string"},
+          "user": {"$ref": "#/components/schemas/User"}
+        }
+      },
+      "ConsentScope": {
+        "type": "object",
+        "properties": {
+          "scope": {"type": "string"},
+          "description": {"type": "string"}
+        }
+      },
+      "ConsentGrant": {
+        "type": "object",
+        "properties": {
+          "scope": {"type": "string"},
+          "granted": {"type": "boolean"}
+        },
+        "required": ["scope", "granted"]
+      },
+      "AssessmentForm": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "name": {"type": "string"},
+          "version": {"type": "string"},
+          "domain_weights_json": {"type": "object"}
+        }
+      },
+      "Response": {
+        "type": "object",
+        "properties": {
+          "student_id": {"type": "integer"},
+          "form_id": {"type": "integer"},
+          "item_id": {"type": "integer"},
+          "payload_json": {"type": "object"},
+          "points": {"type": "number"}
+        },
+        "required": ["student_id", "form_id", "item_id", "payload_json"]
+      },
+      "DomainScores": {
+        "type": "object",
+        "properties": {
+          "Agency": {"type": "number"},
+          "SEL": {"type": "number"},
+          "Financial": {"type": "number"},
+          "Digital": {"type": "number"},
+          "Mindset": {"type": "number"},
+          "Entrepreneurship": {"type": "number"}
+        }
+      },
+      "SCS": {
+        "type": "object",
+        "properties": {
+          "scs": {"type": "number"},
+          "breakdown_json": {"$ref": "#/components/schemas/DomainScores"}
+        }
+      },
+      "HabitTask": {
+        "type": "object",
+        "properties": {
+          "student_id": {"type": "integer"},
+          "title": {"type": "string"},
+          "schedule": {"type": "string"},
+          "status": {"type": "string"},
+          "streak": {"type": "integer"},
+          "created_by": {"type": "integer"}
+        },
+        "required": ["student_id", "title"]
+      },
+      "HabitValidation": {
+        "type": "object",
+        "properties": {
+          "validator_id": {"type": "integer"},
+          "status": {"type": "string", "enum": ["YES", "PARTIAL", "NO"]},
+          "evidence_uri": {"type": "string"},
+          "points": {"type": "number"}
+        },
+        "required": ["validator_id", "status"]
+      },
+      "HabitStats": {
+        "type": "object",
+        "properties": {
+          "total_tasks": {"type": "integer"},
+          "completed": {"type": "integer"},
+          "streak": {"type": "integer"}
+        }
+      },
+      "WalletCredit": {
+        "type": "object",
+        "properties": {
+          "student_id": {"type": "integer"},
+          "source": {"type": "string"},
+          "tokens": {"type": "number"},
+          "meta_json": {"type": "object"}
+        },
+        "required": ["student_id", "source", "tokens"]
+      },
+      "WalletAction": {
+        "type": "object",
+        "properties": {
+          "student_id": {"type": "integer"},
+          "proposal_id": {"type": "integer"},
+          "amount": {"type": "number"}
+        },
+        "required": ["student_id", "proposal_id", "amount"]
+      },
+      "WalletTxn": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "student_id": {"type": "integer"},
+          "source": {"type": "string"},
+          "tokens": {"type": "number"},
+          "meta_json": {"type": "object"},
+          "created_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "Report": {
+        "type": "object",
+        "properties": {
+          "student_id": {"type": "integer"},
+          "period": {"type": "string"},
+          "data": {"type": "object"}
+        }
+      },
+      "ProposalRequest": {
+        "type": "object",
+        "properties": {
+          "studentId": {"type": "integer"},
+          "vertical": {"type": "string"},
+          "instrument": {"type": "string"},
+          "amount": {"type": "number"}
+        },
+        "required": ["studentId", "vertical", "instrument", "amount"]
+      },
+      "ExportResponse": {
+        "type": "object",
+        "properties": {
+          "uri": {"type": "string"},
+          "checksum": {"type": "string"}
+        }
+      },
+      "AnchorRequest": {
+        "type": "object",
+        "properties": {
+          "checksums": {
+            "type": "array",
+            "items": {"type": "string"}
+          }
+        },
+        "required": ["checksums"]
+      },
+      "AnchorResponse": {
+        "type": "object",
+        "properties": {
+          "txid": {"type": "string"}
+        }
+      },
+      "VerifyResponse": {
+        "type": "object",
+        "properties": {
+          "verified": {"type": "boolean"},
+          "data": {"type": "object"}
+        }
+      },
+      "Scholarship": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "sponsor_id": {"type": "integer"},
+          "criteria_json": {"type": "object"},
+          "deadline": {"type": "string", "format": "date-time"},
+          "amount_ctk": {"type": "number"},
+          "status": {"type": "string"}
+        }
+      },
+        "ScholarshipApplication": {
+            "type": "object",
+            "properties": {
+                "id": {"type": "integer"},
+                "student_id": {"type": "integer"},
+                "scholarship_id": {"type": "integer"},
+                "dossier_id": {"type": "integer"},
+                "status": {"type": "string"},
+                "submitted_at": {"type": "string", "format": "date-time"}
+            }
+        },
+        "LoanRequest": {
+            "type": "object",
+            "properties": {
+                "id": {"type": "integer"},
+                "student_id": {"type": "integer"},
+                "parent_id": {"type": "integer"},
+                "brief_json": {"type": "object"},
+                "amount_ctk": {"type": "number"},
+                "repayment_plan": {"type": "string"},
+                "status": {"type": "string"}
+            }
+        },
+        "LoanFunding": {
+            "type": "object",
+            "properties": {
+                "id": {"type": "integer"},
+                "loan_id": {"type": "integer"},
+                "investor_id": {"type": "integer"},
+                "amount_ctk": {"type": "number"},
+                "share_pct": {"type": "number"},
+                "status": {"type": "string"}
+            }
+        },
+        "Repayment": {
+            "type": "object",
+            "properties": {
+                "id": {"type": "integer"},
+                "loan_id": {"type": "integer"},
+                "installment_no": {"type": "integer"},
+                "due_date": {"type": "string", "format": "date-time"},
+                "amount_ctk": {"type": "number"},
+                "status": {"type": "string"}
+            }
+        },
+        "Dossier": {
+            "type": "object",
+            "properties": {
+                "id": {"type": "integer"},
+                "student_id": {"type": "integer"},
+                "snapshot_json": {"type": "object"},
+                "hash": {"type": "string"},
+                "pdf_uri": {"type": "string"},
+                "anchored_txid": {"type": "string"}
+            }
+        }
+    }
+  }
+}

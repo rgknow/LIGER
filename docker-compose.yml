@@ -1,0 +1,64 @@
+version: '3.8'
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15
+    container_name: liger-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: liger_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - liger_network
+
+  # NATS Event Bus
+  nats:
+    image: nats:2.10
+    container_name: liger-nats
+    ports:
+      - "4222:4222"  # Client connections
+      - "8222:8222"  # HTTP monitoring
+      - "6222:6222"  # Routing port for clustering
+    command: 
+      - "--jetstream"
+      - "--store_dir=/data"
+      - "--http_port=8222"
+    volumes:
+      - nats_data:/data
+    networks:
+      - liger_network
+
+  # Redis for Caching
+  redis:
+    image: redis:7-alpine
+    container_name: liger-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - liger_network
+
+  # NATS Monitoring (optional)
+  nats-box:
+    image: natsio/nats-box:latest
+    container_name: liger-nats-box
+    networks:
+      - liger_network
+    depends_on:
+      - nats
+    profiles:
+      - tools
+
+volumes:
+  postgres_data:
+  nats_data:
+  redis_data:
+
+networks:
+  liger_network:
+    driver: bridge

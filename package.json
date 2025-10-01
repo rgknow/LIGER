@@ -1,0 +1,39 @@
+{
+  "name": "liger",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx tsx scripts/test-db.ts",
+    "dev:db": "docker run --name liger-postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=liger_dev -p 5432:5432 -d postgres:15 || docker start liger-postgres",
+    "db:migrate": "npx prisma migrate dev",
+    "db:seed": "npx tsx prisma/seed.ts",
+    "db:studio": "npx prisma studio",
+    "dev:approval": "cd apps/approval-svc && npm run start:dev",
+    "dev:risk": "cd apps/risk-svc && npm run start:dev",
+    "dev:notify": "cd apps/notify-svc && npm run start:dev",
+    "dev:proposal": "cd apps/proposal-svc && npm run start:dev",
+    "dev:gift": "cd apps/gift-svc && npm run start:dev",
+    "dev:scholarship": "cd apps/scholarship-svc && npm run start:dev",
+    "dev:loan": "cd apps/loan-svc && npm run start:dev",
+    "dev:dossier": "cd apps/dossier-svc && npm run start:dev",
+    "dev:all": "concurrently \"npm run dev:approval\" \"npm run dev:risk\" \"npm run dev:notify\" \"npm run dev:proposal\""
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@prisma/client": "^6.16.3",
+    "concurrently": "^9.2.1",
+    "prisma": "^6.16.3",
+    "tsx": "^4.20.6"
+  },
+  "dependencies": {
+    "ethers": "^6.15.0",
+    "nats": "^2.29.3"
+  }
+}
